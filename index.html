@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verli IA Lite</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f1f1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      width: 80%;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    #resposta {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Verli IA Lite</h1>
+    <p><em>eu sou a Verli sua Assistente pessoal do dia a dia, em que posso ajudar?</em></p>
+    <input type="text" id="entrada" placeholder="Fale comigo..." />
+    <button onclick="enviarPergunta()">Enviar</button>
+    <div id="resposta">...</div>
+  </div>
+
+  <script>
+    async function enviarPergunta() {
+      const pergunta = document.getElementById("entrada").value;
+      const respostaDiv = document.getElementById("resposta");
+      respostaDiv.textContent = "Pensando...";
+
+      try {
+        const resposta = await fetch(
+          `https://api.duckduckgo.com/?q=${encodeURIComponent(pergunta)}&format=json&no_redirect=1&skip_disambig=1`
+        ).then(res => res.json());
+
+        if (resposta.AbstractText) {
+          respostaDiv.textContent = resposta.AbstractText;
+        } else if (resposta.RelatedTopics?.[0]?.Text) {
+          respostaDiv.textContent = resposta.RelatedTopics[0].Text;
+        } else {
+          respostaDiv.textContent = "Desculpe, não encontrei uma resposta exata.";
+        }
+      } catch (error) {
+        respostaDiv.textContent = "Erro ao buscar resposta.";
+      }
+    }
+  </script>
+</body>
+</html>
